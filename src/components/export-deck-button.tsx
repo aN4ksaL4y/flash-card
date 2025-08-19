@@ -51,13 +51,12 @@ export function ExportDeckButton({ deck }: ExportDeckButtonProps) {
   const convertToCSV = (cards: Card[]): string => {
     const headers = ['front', 'back'];
     const escapeCell = (cell: string) => {
-        // Escape double quotes by doubling them
-        let escaped = cell.replace(/"/g, '""');
-        // If the cell contains a comma, newline, or double quote, enclose it in double quotes
-        if (escaped.includes(',') || escaped.includes('\n') || escaped.includes('"')) {
-            escaped = `"${escaped}"`;
+        // More robust escaping
+        if (cell.includes(',') || cell.includes('"') || cell.includes('\n')) {
+            // Escape double quotes by doubling them, then wrap the whole thing in double quotes.
+            return `"${cell.replace(/"/g, '""')}"`;
         }
-        return escaped;
+        return cell;
     };
 
     const rows = cards.map(card => 
