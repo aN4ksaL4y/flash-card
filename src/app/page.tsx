@@ -13,7 +13,7 @@ export default function Home() {
 
   useEffect(() => {
     const fetchData = async () => {
-      await initializeData();
+      await initializeData(); // This will seed the DB if it's empty
       const fetchedDecks = await getDecks();
       setDecks(fetchedDecks);
       setIsLoading(false);
