@@ -29,7 +29,6 @@ export default function DeckPage() {
   const [cards, setCards] = useState<CardType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateDialogOpen, setCreateDialogOpen] = useState(false);
-  const [isImportDialogOpen, setImportDialogOpen] = useState(false);
   
   const deckId = params.deckId;
 
@@ -124,14 +123,7 @@ export default function DeckPage() {
                 <ImportSheetDialog
                   deckId={deck.id}
                   onImportComplete={refreshCards}
-                  open={isImportDialogOpen}
-                  onOpenChange={setImportDialogOpen}
-                >
-                  <Button variant="outline">
-                    <FileUp className="mr-2 h-4 w-4" />
-                    Import from Sheet
-                  </Button>
-                </ImportSheetDialog>
+                />
 
                 {cards.length > 0 && (
                 <Button asChild>

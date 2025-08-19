@@ -1,15 +1,14 @@
 
 'use server';
 /**
- * @fileOverview Flow to import flashcards from a Google Sheet.
+ * @fileOverview Flow to import flashcards from a publicly shared Google Sheet.
  * 
- * - importFromSheet - A function that takes a Google Sheet fileId, fetches the data, and returns an array of cards.
+ * - importFromSheet - A function that takes a public Google Sheet URL, fetches the data as CSV, and returns an array of cards.
  * - CardSchema - The Zod schema for a single card (front and back).
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { google } from 'googleapis';
 
 const CardSchema = z.object({
   front: z.string().describe('The content for the front of the flashcard.'),
@@ -34,7 +33,7 @@ const sheetImportPrompt = ai.definePrompt({
     Example Output:
     [
         { "front": "Hello", "back": "こんにちは" },
-        { "front": "Thank you", "back": "ありがとう" }
+        { "front": "Thank you", "ありがとう" }
     ]
     Here is the content:
     {{{input}}}
@@ -44,43 +43,36 @@ const sheetImportPrompt = ai.definePrompt({
 const importFromSheetFlow = ai.defineFlow(
   {
     name: 'importFromSheetFlow',
-    inputSchema: z.string(), // fileId
+    inputSchema: z.string().url(), // The public Google Sheet URL
     outputSchema: SheetImportOutputSchema,
   },
-  async (fileId) => {
-    // 1. Authenticate with Google.
-    // Note: This uses Application Default Credentials.
-    // Ensure your environment is authenticated (e.g., via `gcloud auth application-default login`)
-    const auth = new google.auth.GoogleAuth({
-      scopes: ['https://www.googleapis.com/auth/drive.readonly'],
-    });
-    const authClient = await auth.getClient();
-    const drive = google.drive({ version: 'v3', auth: authClient });
-
-    // 2. Fetch the CSV data from Drive
-    const response = await drive.files.export(
-      { fileId, mimeType: 'text/csv' },
-      { responseType: 'stream' }
-    );
-
-    // 3. Convert stream to string
-    const chunks: any[] = [];
-    for await (const chunk of response.data as any) {
-        chunks.push(chunk);
+  async (sheetUrl) => {
+    // 1. Extract the Sheet ID and format it into a CSV export URL
+    const sheetIdMatch = sheetUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    if (!sheetIdMatch || !sheetIdMatch[1]) {
+      throw new Error("Invalid Google Sheet URL. Make sure it's a public sheet link.");
     }
-    const csvText = Buffer.concat(chunks).toString('utf8');
+    const sheetId = sheetIdMatch[1];
+    const csvExportUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
+
+    // 2. Fetch the CSV data
+    const response = await fetch(csvExportUrl);
+    if (!response.ok) {
+        throw new Error(`Failed to fetch the Google Sheet. Status: ${response.status}. Make sure the sheet is public.`);
+    }
+    const csvText = await response.text();
 
     if (!csvText) {
       return [];
     }
 
-    // 4. Use AI to parse the CSV text into structured card data
+    // 3. Use AI to parse the CSV text into structured card data
     const { output } = await sheetImportPrompt(csvText);
     return output || [];
   }
 );
 
 
-export async function importFromSheet(fileId: string): Promise<SheetImportOutput> {
-    return importFromSheetFlow(fileId);
+export async function importFromSheet(url: string): Promise<SheetImportOutput> {
+    return importFromSheetFlow(url);
 }
