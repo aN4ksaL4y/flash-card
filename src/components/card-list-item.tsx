@@ -50,18 +50,18 @@ export function CardListItem({ card, onCardChange }: CardListItemProps) {
   return (
     <Card>
       <CardContent className="p-4 flex items-center justify-between">
-        <div className="flex-grow grid grid-cols-2 gap-4 items-center prose prose-sm max-w-none">
+        <div className="flex-grow grid grid-cols-2 gap-4 items-start prose max-w-none">
           <div className="text-foreground pr-4">
              <ReactMarkdown remarkPlugins={[remarkGfm]}>{card.front}</ReactMarkdown>
           </div>
           <div className="flex items-center">
-            <Separator orientation="vertical" className="h-10 mr-4" />
-            <div className="text-muted-foreground">
+            <Separator orientation="vertical" className="h-auto self-stretch" />
+            <div className="text-muted-foreground pl-4">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{card.back}</ReactMarkdown>
             </div>
           </div>
         </div>
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 pl-4">
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="ghost" size="icon" className="text-destructive/70 hover:text-destructive hover:bg-destructive/10">
