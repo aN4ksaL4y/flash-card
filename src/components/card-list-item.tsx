@@ -32,15 +32,15 @@ export function CardListItem({ card, onCardChange }: CardListItemProps) {
     try {
       await deleteCard(card.id);
       toast({
-        title: "Card Deleted",
-        description: "The card has been removed from the deck.",
+        title: "Kartu Dihapus",
+        description: "Kartu tadi udah dibuang dari deck.",
       });
       onCardChange();
     } catch (error) {
        toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to delete the card. Please try again.",
+        description: "Gagal ngehapus kartu. Coba lagi ntar.",
       });
     }
   };
@@ -64,14 +64,14 @@ export function CardListItem({ card, onCardChange }: CardListItemProps) {
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogTitle>Yakin nih?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action will permanently delete this card. This cannot be undone.
+                  Tindakan ini bakal ngehapus kartu ini permanen. Gak bisa dibalikin lagi.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+                <AlertDialogCancel>Gak Jadi</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete}>Hapus</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>

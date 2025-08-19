@@ -29,15 +29,15 @@ export default function LoginPage() {
       await signInWithPopup(auth, provider);
       // Let the AuthProvider handle the redirect
       toast({
-        title: "Signed In",
-        description: "Welcome back!",
+        title: "Berhasil Masuk",
+        description: "Selamat datang kembali, bro!",
       });
     } catch (error) {
-      console.error("Google Sign-In Error: ", error);
+      console.error("Error pas login Google: ", error);
       toast({
         variant: "destructive",
-        title: "Sign-In Failed",
-        description: "Could not sign in with Google. Please try again.",
+        title: "Gagal Masuk",
+        description: "Gak bisa masuk pake Google. Coba lagi gih.",
       });
     } finally {
         setIsSigningIn(false);
@@ -48,8 +48,8 @@ export default function LoginPage() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4 mb-8">
             <BookOpenCheck className="h-12 w-12 text-primary" />
-            <h1 className="text-4xl font-bold font-headline">Welcome to FlashZen</h1>
-            <p className="text-lg text-muted-foreground">Sign in to continue to your decks.</p>
+            <h1 className="text-4xl font-bold font-headline">Selamat Datang di FlashZen</h1>
+            <p className="text-lg text-muted-foreground">Masuk dulu, baru lanjut ke deck-mu.</p>
         </div>
       <div className="w-full max-w-sm rounded-lg border border-border bg-card p-8 shadow-sm">
         <Button 
@@ -64,7 +64,7 @@ export default function LoginPage() {
           ) : (
             <GoogleIcon />
           )}
-          Sign in with Google
+          Masuk pake Google
         </Button>
       </div>
     </div>

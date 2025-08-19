@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -124,7 +125,7 @@ const AlertDialogCancel = React.forwardRef<
     {...props}
   />
 ))
-AlertDialogCancel.displayName = AlertDialogPrimitive.Cancel.displayName
+AlertDialogCancel.displayName = "Gak Jadi"
 
 export {
   AlertDialog,

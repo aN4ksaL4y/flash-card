@@ -31,7 +31,7 @@ export default function ReviewPage() {
             setCardsForReview(reviewCards);
           }
         } catch (error) {
-          console.error("Failed to fetch review data:", error);
+          console.error("Gagal ngambil data hafalan:", error);
         } finally {
           setIsLoading(false);
         }
@@ -45,7 +45,7 @@ export default function ReviewPage() {
       <div className="flex flex-col min-h-screen">
         <Header />
         <main className="flex-1 flex items-center justify-center">
-            <div className="animate-pulse text-muted-foreground">Loading review session...</div>
+            <div className="animate-pulse text-muted-foreground">Lagi nyiapin sesi hafalan...</div>
         </main>
       </div>
     );

@@ -59,15 +59,15 @@ export function DeckList({ decks, onDecksChange }: DeckListProps) {
     try {
       await deleteDeck(deckId);
       toast({
-        title: "Deck Deleted",
-        description: `The deck "${deckTitle}" and all its cards have been deleted.`,
+        title: "Deck Dihapus",
+        description: `Deck "${deckTitle}" sama semua isinya udah kehapus.`,
       });
       onDecksChange();
     } catch (error) {
        toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to delete deck. Please try again.",
+        description: "Gagal ngehapus deck. Coba lagi ntar.",
       });
     }
   };
@@ -76,21 +76,21 @@ export function DeckList({ decks, onDecksChange }: DeckListProps) {
     return (
       <EmptyState
         Icon={Book}
-        title="No Decks Yet"
-        description="Get started by creating your first flashcard deck."
+        title="Belum Punya Deck Nih"
+        description="Yuk, bikin deck pertamamu buat mulai ngapalin."
         action={
           <Dialog open={isCreateDialogOpen} onOpenChange={setCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button>
                 <PlusCircle className="mr-2 h-4 w-4" />
-                Create New Deck
+                Bikin Deck Baru
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Create New Deck</DialogTitle>
+                <DialogTitle>Bikin Deck Baru</DialogTitle>
                 <DialogDescription>
-                  Give your new deck a title and an optional description.
+                  Kasih judul sama deskripsi (kalau mau) buat deck barumu.
                 </DialogDescription>
               </DialogHeader>
               <DeckForm onFormSubmit={onDecksChange} setOpen={setCreateDialogOpen} />
@@ -104,19 +104,19 @@ export function DeckList({ decks, onDecksChange }: DeckListProps) {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-foreground font-headline">Your Decks</h1>
+        <h1 className="text-3xl font-bold text-foreground font-headline">Deck Punya Lu</h1>
         <Dialog open={isCreateDialogOpen} onOpenChange={setCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <PlusCircle className="mr-2 h-4 w-4" />
-              Create New Deck
+              Bikin Deck Baru
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Create New Deck</DialogTitle>
+              <DialogTitle>Bikin Deck Baru</DialogTitle>
               <DialogDescription>
-                Give your new deck a title and an optional description.
+                Kasih judul sama deskripsi (kalau mau) buat deck barumu.
               </DialogDescription>
             </DialogHeader>
             <DeckForm onFormSubmit={onDecksChange} setOpen={setCreateDialogOpen} />
@@ -130,12 +130,12 @@ export function DeckList({ decks, onDecksChange }: DeckListProps) {
             <CardHeader>
               <CardTitle className="font-headline truncate">{deck.title}</CardTitle>
               <CardDescription className="h-10 text-ellipsis overflow-hidden">
-                {deck.description || 'No description.'}
+                {deck.description || 'Gak ada deskripsi.'}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex-grow">
               <p className="text-sm text-muted-foreground">
-                {cardCounts[deck.id] !== undefined ? `${cardCounts[deck.id]} cards` : '...'}
+                {cardCounts[deck.id] !== undefined ? `${cardCounts[deck.id]} kartu` : '...'}
               </p>
             </CardContent>
             <CardFooter className="flex justify-between">
@@ -147,23 +147,23 @@ export function DeckList({ decks, onDecksChange }: DeckListProps) {
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogTitle>Yakin banget nih?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete the
+                      Ini gak bisa dibalikin loh. Deck
                       <span className="font-semibold"> {deck.title} </span> 
-                      deck and all its cards.
+                      sama semua isinya bakal lenyap selamanya.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>Gak Jadi</AlertDialogCancel>
                     <AlertDialogAction onClick={() => handleDeleteDeck(deck.id, deck.title)}>
-                      Continue
+                      Lanjutin
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
               <Button asChild>
-                <Link href={`/decks/${deck.id}`}>View Deck</Link>
+                <Link href={`/decks/${deck.id}`}>Lihat Deck</Link>
               </Button>
             </CardFooter>
           </Card>

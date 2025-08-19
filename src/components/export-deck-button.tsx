@@ -23,8 +23,8 @@ export function ExportDeckButton({ deck }: ExportDeckButtonProps) {
       if (cards.length === 0) {
         toast({
           variant: 'destructive',
-          title: 'Export Failed',
-          description: 'This deck has no cards to export.',
+          title: 'Gagal Ekspor',
+          description: 'Deck ini gak ada isinya buat diekspor.',
         });
         return;
       }
@@ -33,15 +33,15 @@ export function ExportDeckButton({ deck }: ExportDeckButtonProps) {
       downloadCSV(csvContent, `${deck.title.replace(/\s+/g, '_')}_export.csv`);
 
       toast({
-        title: 'Export Successful',
-        description: `${cards.length} cards have been exported to a CSV file.`,
+        title: 'Ekspor Berhasil',
+        description: `${cards.length} kartu udah diekspor jadi file CSV.`,
       });
     } catch (error) {
-      console.error('Export failed:', error);
+      console.error('Ekspor gagal:', error);
       toast({
         variant: 'destructive',
-        title: 'Export Failed',
-        description: 'An unexpected error occurred. Please try again.',
+        title: 'Gagal Ekspor',
+        description: 'Waduh, ada error. Coba lagi ntar ya.',
       });
     } finally {
       setIsExporting(false);
@@ -87,7 +87,7 @@ export function ExportDeckButton({ deck }: ExportDeckButtonProps) {
       ) : (
         <Download className="mr-2 h-4 w-4" />
       )}
-      Export to CSV
+      Ekspor ke CSV
     </Button>
   );
 }

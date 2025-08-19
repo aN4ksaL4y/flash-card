@@ -26,14 +26,14 @@ export function Header() {
     try {
       await signOut(auth);
       toast({
-        title: "Signed Out",
-        description: "You have been successfully signed out.",
+        title: "Udah Keluar",
+        description: "Kamu berhasil keluar. Sampai jumpa lagi!",
       });
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Error Signing Out",
-        description: "There was a problem signing out. Please try again.",
+        title: "Gagal Keluar",
+        description: "Ada masalah pas mau keluar. Coba lagi.",
       });
     }
   };
@@ -69,7 +69,7 @@ export function Header() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
+                  <span>Keluar</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

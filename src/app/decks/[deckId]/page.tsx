@@ -47,7 +47,7 @@ export default function DeckPage() {
             setCards(foundCards);
           }
         } catch (error) {
-          console.error("Failed to fetch deck data:", error);
+          console.error("Gagal ngambil data deck:", error);
         } finally {
           setIsLoading(false);
         }
@@ -90,7 +90,7 @@ export default function DeckPage() {
           <Button asChild variant="ghost" className="mb-4">
             <Link href="/">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Decks
+              Balik ke Daftar Deck
             </Link>
           </Button>
           <div className="md:flex justify-between items-start">
@@ -103,14 +103,14 @@ export default function DeckPage() {
                   <DialogTrigger asChild>
                       <Button variant="outline">
                           <PlusCircle className="mr-2 h-4 w-4" />
-                          Add Card
+                          Tambah Kartu
                       </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[425px]">
                       <DialogHeader>
-                      <DialogTitle>Add New Card</DialogTitle>
+                      <DialogTitle>Bikin Kartu Baru</DialogTitle>
                       <DialogDescription>
-                          Enter the front and back content for your new card.
+                          Isi depan sama belakang kartu barumu.
                       </DialogDescription>
                       </DialogHeader>
                       <CardForm
@@ -132,7 +132,7 @@ export default function DeckPage() {
                 <Button asChild>
                     <Link href={`/decks/${deck.id}/review`}>
                     <BookOpen className="mr-2 h-4 w-4" />
-                    Review Deck
+                    Mulai Hafalan
                     </Link>
                 </Button>
                 )}
@@ -149,21 +149,21 @@ export default function DeckPage() {
         ) : (
           <EmptyState
             Icon={Layers}
-            title="No Cards in This Deck"
-            description="Add your first card to start building your deck."
+            title="Deck Ini Masih Kosong"
+            description="Ayo bikin kartu pertamamu buat mulai ngisi deck ini."
             action={
                 <Dialog open={isCreateDialogOpen} onOpenChange={setCreateDialogOpen}>
                 <DialogTrigger asChild>
                     <Button>
                         <PlusCircle className="mr-2 h-4 w-4" />
-                        Add First Card
+                        Bikin Kartu Pertama
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                    <DialogTitle>Add New Card</DialogTitle>
+                    <DialogTitle>Bikin Kartu Baru</DialogTitle>
                     <DialogDescription>
-                        Enter the front and back content for your new card.
+                        Isi depan sama belakang kartu barumu.
                     </DialogDescription>
                     </DialogHeader>
                     <CardForm

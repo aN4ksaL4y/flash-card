@@ -22,7 +22,7 @@ export default function Home() {
       const fetchedDecks = await getDecks();
       setDecks(fetchedDecks);
     } catch (error) {
-      console.error("Failed to load decks:", error);
+      console.error("Gagal ngambil deck:", error);
       // Optionally, show a toast message to the user
     } finally {
       setIsLoading(false);
@@ -49,7 +49,7 @@ export default function Home() {
         <Header />
         <main className="flex-1 container mx-auto p-4 md:p-8">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-foreground font-headline">Your Decks</h1>
+            <h1 className="text-3xl font-bold text-foreground font-headline">Deck Punya Lu</h1>
             <div className="h-10 w-36 bg-muted rounded-md animate-pulse" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -38,8 +38,8 @@ export function ImportSheetDialog({
     if (!sheetUrl) {
       toast({
         variant: 'destructive',
-        title: 'URL Required',
-        description: 'Please enter a Google Sheet URL.',
+        title: 'URL Wajib Diisi',
+        description: 'Masukin URL Google Sheet-nya dong.',
       });
       return;
     }
@@ -53,23 +53,23 @@ export function ImportSheetDialog({
           importedCards.map((c) => ({ front: c.front, back: c.back }))
         );
         toast({
-          title: 'Import Successful',
-          description: `${importedCards.length} cards were imported into your deck.`,
+          title: 'Impor Berhasil',
+          description: `${importedCards.length} kartu udah diimpor ke deck-mu.`,
         });
         onImportComplete();
         setIsOpen(false);
         setSheetUrl('');
       } else {
         // This is the error that was being triggered before
-        throw new Error('No cards were found in the sheet. Please ensure the link is for a public sheet and that the format is correct (Column A for front, Column B for back).');
+        throw new Error('Gak ada kartu yang ditemuin di sheet. Pastiin link-nya buat sheet publik dan formatnya bener (Kolom A buat depan, Kolom B buat belakang).');
       }
     } catch (error) {
-      console.error('Import failed:', error);
+      console.error('Impor gagal:', error);
       toast({
         variant: 'destructive',
-        title: 'Import Failed',
+        title: 'Impor Gagal',
         // Now the more descriptive error message will be shown
-        description: error instanceof Error ? error.message : 'An unknown error occurred. Please try again.',
+        description: error instanceof Error ? error.message : 'Waduh, ada error gak dikenal. Coba lagi ntar.',
         duration: 9000, // Show for longer
       });
     } finally {
@@ -82,20 +82,20 @@ export function ImportSheetDialog({
       <DialogTrigger asChild>
         <Button variant="outline">
           <FileUp className="mr-2 h-4 w-4" />
-          Import from Sheet
+          Impor dari Sheet
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Import from Public Google Sheet</DialogTitle>
+          <DialogTitle>Impor dari Google Sheet Publik</DialogTitle>
           <DialogDescription>
-            Paste the URL of a publicly shared Google Sheet. The first column (A) should be the card front, and the second column (B) should be the back.
+            Tempel URL Google Sheet yang bisa diakses publik. Kolom pertama (A) buat depan kartu, kolom kedua (B) buat belakangnya.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="sheet-url" className="text-right">
-              Sheet URL
+              URL Sheet
             </Label>
             <Input
               id="sheet-url"
@@ -110,14 +110,14 @@ export function ImportSheetDialog({
         <DialogFooter>
           <DialogClose asChild>
             <Button type="button" variant="ghost" disabled={isImporting}>
-              Cancel
+              Batal
             </Button>
           </DialogClose>
           <Button onClick={handleImport} disabled={isImporting}>
             {isImporting ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : null}
-            Import Cards
+            Impor Kartu
           </Button>
         </DialogFooter>
       </DialogContent>

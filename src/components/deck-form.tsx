@@ -22,12 +22,12 @@ import { useToast } from "@/hooks/use-toast"
 
 const deckFormSchema = z.object({
   title: z.string().min(2, {
-    message: "Title must be at least 2 characters.",
+    message: "Judulnya minimal 2 huruf lah.",
   }).max(50, {
-    message: "Title must not be longer than 50 characters.",
+    message: "Judulnya jangan panjang-panjang, max 50 huruf.",
   }),
   description: z.string().max(200, {
-    message: "Description must not be longer than 200 characters.",
+    message: "Deskripsinya max 200 huruf aja.",
   }).optional(),
 })
 
@@ -56,8 +56,8 @@ export function DeckForm({ onFormSubmit, setOpen }: DeckFormProps) {
         description: data.description || '',
       });
       toast({
-        title: "Deck Created",
-        description: `The deck "${data.title}" has been successfully created.`,
+        title: "Deck Dibuat",
+        description: `Deck "${data.title}" udah berhasil dibuat. Mantap!`,
       });
       onFormSubmit();
       setOpen(false);
@@ -65,7 +65,7 @@ export function DeckForm({ onFormSubmit, setOpen }: DeckFormProps) {
        toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to create the deck. Please try again.",
+        description: "Gagal bikin deck. Coba lagi ntar ya.",
       });
     }
   }
@@ -78,9 +78,9 @@ export function DeckForm({ onFormSubmit, setOpen }: DeckFormProps) {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>Judul</FormLabel>
               <FormControl>
-                <Input placeholder="e.g. Japanese Vocabulary" {...field} />
+                <Input placeholder="Contoh: Kosakata Jepang" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -91,10 +91,10 @@ export function DeckForm({ onFormSubmit, setOpen }: DeckFormProps) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description (Optional)</FormLabel>
+              <FormLabel>Deskripsi (Opsional)</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="A brief description of your deck"
+                  placeholder="Deskripsi singkat tentang deck-mu"
                   className="resize-none"
                   {...field}
                 />
@@ -104,10 +104,10 @@ export function DeckForm({ onFormSubmit, setOpen }: DeckFormProps) {
           )}
         />
         <div className="flex justify-end gap-2">
-            <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Batal</Button>
             <Button type="submit" disabled={formState.isSubmitting}>
               {formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Create Deck
+              Bikin Deck
             </Button>
         </div>
       </form>

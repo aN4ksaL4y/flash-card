@@ -1,3 +1,4 @@
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
@@ -5,7 +6,7 @@ import { AuthProvider } from '@/components/auth-provider';
 
 export const metadata: Metadata = {
   title: 'FlashZen',
-  description: 'A simple, effective flashcard app for memorization and learning.',
+  description: 'Aplikasi kartu flash simpel buat ngapalin dan belajar.',
 };
 
 export default function RootLayout({

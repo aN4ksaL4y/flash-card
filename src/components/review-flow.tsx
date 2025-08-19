@@ -55,7 +55,7 @@ export function ReviewFlow({ deck, initialCards }: ReviewFlowProps) {
        toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to update card status. Please try again.",
+        description: "Gagal ngupdate status kartu. Coba lagi ntar.",
       });
     }
   };
@@ -65,17 +65,17 @@ export function ReviewFlow({ deck, initialCards }: ReviewFlowProps) {
       <main className="flex-1 flex items-center justify-center p-4">
          <EmptyState
             Icon={CheckCircle}
-            title={totalCards > 0 ? "Review Complete!" : "Nothing to review!"}
-            description={totalCards > 0 ? `You've reviewed all ${totalCards} cards for today.` : `All cards in this deck are up to date. Good job!`}
+            title={totalCards > 0 ? "Sesi Hafalan Beres!" : "Gak Ada yang Perlu Dihafal!"}
+            description={totalCards > 0 ? `Mantap! Kamu udah ngulang semua ${totalCards} kartu buat hari ini.` : `Semua kartu di deck ini udah aman. Kerja bagus!`}
             action={
                 <div className="flex gap-4 justify-center">
                     <Button asChild variant="outline">
-                        <Link href={`/decks/${deck.id}`}>Back to Deck</Link>
+                        <Link href={`/decks/${deck.id}`}>Balik ke Deck</Link>
                     </Button>
                     <Button asChild>
                         <Link href="/">
                             <Home className="mr-2 h-4 w-4" />
-                            Go Home
+                            Balik ke Beranda
                         </Link>
                     </Button>
                 </div>
@@ -91,7 +91,7 @@ export function ReviewFlow({ deck, initialCards }: ReviewFlowProps) {
     <main className="flex-1 flex flex-col items-center justify-center p-4 space-y-6">
       <div className="w-full max-w-2xl">
         <div className="text-center mb-2 text-muted-foreground">
-            {currentIndex + 1} of {totalCards}
+            {currentIndex + 1} dari {totalCards}
         </div>
         <Progress value={progress} className="w-full" />
       </div>
@@ -122,12 +122,12 @@ export function ReviewFlow({ deck, initialCards }: ReviewFlowProps) {
       
       <div>
         {!isFlipped ? (
-          <Button size="lg" onClick={handleFlip}>Flip Card</Button>
+          <Button size="lg" onClick={handleFlip}>Balik Kartu</Button>
         ) : (
           <div className="grid grid-cols-3 gap-4">
-            <Button variant="destructive" size="lg" onClick={() => handleNextCard('hard')}>Hard</Button>
-            <Button variant="outline" size="lg" onClick={() => handleNextCard('medium')}>Medium</Button>
-            <Button variant="default" className="bg-green-500 hover:bg-green-600" size="lg" onClick={() => handleNextCard('easy')}>Easy</Button>
+            <Button variant="destructive" size="lg" onClick={() => handleNextCard('hard')}>Susah</Button>
+            <Button variant="outline" size="lg" onClick={() => handleNextCard('medium')}>Biasa</Button>
+            <Button variant="default" className="bg-green-500 hover:bg-green-600" size="lg" onClick={() => handleNextCard('easy')}>Gampang</Button>
           </div>
         )}
       </div>

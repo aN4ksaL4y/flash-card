@@ -20,8 +20,8 @@ import { createCard } from "@/lib/data"
 import { useToast } from "@/hooks/use-toast"
 
 const cardFormSchema = z.object({
-  front: z.string().min(1, { message: "Front content cannot be empty." }).max(500),
-  back: z.string().min(1, { message: "Back content cannot be empty." }).max(500),
+  front: z.string().min(1, { message: "Isi depan kartu gak boleh kosong." }).max(500),
+  back: z.string().min(1, { message: "Isi belakang kartu gak boleh kosong." }).max(500),
 })
 
 type CardFormValues = z.infer<typeof cardFormSchema>
@@ -51,8 +51,8 @@ export function CardForm({ deckId, onFormSubmit, setOpen }: CardFormProps) {
         back: data.back,
       });
       toast({
-        title: "Card Added",
-        description: "Your new card has been added to the deck.",
+        title: "Kartu Ditambahin",
+        description: "Kartu barumu udah masuk ke dalem deck.",
       });
       onFormSubmit();
       setOpen(false);
@@ -61,7 +61,7 @@ export function CardForm({ deckId, onFormSubmit, setOpen }: CardFormProps) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to create the card. Please try again.",
+        description: "Gagal bikin kartu. Coba lagi ntar ya.",
       });
     }
   }
@@ -74,10 +74,10 @@ export function CardForm({ deckId, onFormSubmit, setOpen }: CardFormProps) {
           name="front"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Front</FormLabel>
+              <FormLabel>Depan</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Content for the front of the card"
+                  placeholder="Isi buat bagian depan kartu"
                   className="resize-y min-h-[100px]"
                   {...field}
                 />
@@ -91,10 +91,10 @@ export function CardForm({ deckId, onFormSubmit, setOpen }: CardFormProps) {
           name="back"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Back</FormLabel>
+              <FormLabel>Belakang</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Content for the back of the card"
+                  placeholder="Isi buat bagian belakang kartu"
                   className="resize-y min-h-[100px]"
                   {...field}
                 />
@@ -104,10 +104,10 @@ export function CardForm({ deckId, onFormSubmit, setOpen }: CardFormProps) {
           )}
         />
         <div className="flex justify-end gap-2">
-          <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
+          <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Batal</Button>
           <Button type="submit" disabled={formState.isSubmitting}>
             {formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Add Card
+            Tambah Kartu
           </Button>
         </div>
       </form>
