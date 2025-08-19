@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { type Deck } from '@/lib/types';
 import { Book, PlusCircle, Trash2 } from 'lucide-react';
@@ -37,15 +38,38 @@ interface DeckListProps {
 
 export function DeckList({ decks, onDecksChange }: DeckListProps) {
   const [isCreateDialogOpen, setCreateDialogOpen] = useState(false);
+  const [cardCounts, setCardCounts] = useState<Record<string, number>>({});
   const { toast } = useToast();
 
-  const handleDeleteDeck = (deckId: string, deckTitle: string) => {
-    deleteDeck(deckId);
-    toast({
-      title: "Deck Deleted",
-      description: `The deck "${deckTitle}" and all its cards have been deleted.`,
-    });
-    onDecksChange();
+  useEffect(() => {
+    const fetchCardCounts = async () => {
+      const counts: Record<string, number> = {};
+      for (const deck of decks) {
+        const cards = await getCardsForDeck(deck.id);
+        counts[deck.id] = cards.length;
+      }
+      setCardCounts(counts);
+    };
+    if (decks.length > 0) {
+      fetchCardCounts();
+    }
+  }, [decks]);
+
+  const handleDeleteDeck = async (deckId: string, deckTitle: string) => {
+    try {
+      await deleteDeck(deckId);
+      toast({
+        title: "Deck Deleted",
+        description: `The deck "${deckTitle}" and all its cards have been deleted.`,
+      });
+      onDecksChange();
+    } catch (error) {
+       toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to delete deck. Please try again.",
+      });
+    }
   };
 
   if (decks.length === 0) {
@@ -110,7 +134,9 @@ export function DeckList({ decks, onDecksChange }: DeckListProps) {
               </CardDescription>
             </CardHeader>
             <CardContent className="flex-grow">
-              <p className="text-sm text-muted-foreground">{getCardsForDeck(deck.id).length} cards</p>
+              <p className="text-sm text-muted-foreground">
+                {cardCounts[deck.id] !== undefined ? `${cardCounts[deck.id]} cards` : '...'}
+              </p>
             </CardContent>
             <CardFooter className="flex justify-between">
               <AlertDialog>

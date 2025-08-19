@@ -1,8 +1,10 @@
+
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
 import {
@@ -39,20 +41,29 @@ export function CardForm({ deckId, onFormSubmit, setOpen }: CardFormProps) {
       back: "",
     },
   })
+  const { formState } = form;
 
-  function onSubmit(data: CardFormValues) {
-    createCard({
-      deckId,
-      front: data.front,
-      back: data.back,
-    });
-    toast({
-      title: "Card Added",
-      description: "Your new card has been added to the deck.",
-    });
-    onFormSubmit();
-    setOpen(false);
-    form.reset();
+  async function onSubmit(data: CardFormValues) {
+    try {
+      await createCard({
+        deckId,
+        front: data.front,
+        back: data.back,
+      });
+      toast({
+        title: "Card Added",
+        description: "Your new card has been added to the deck.",
+      });
+      onFormSubmit();
+      setOpen(false);
+      form.reset();
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to create the card. Please try again.",
+      });
+    }
   }
 
   return (
@@ -94,7 +105,10 @@ export function CardForm({ deckId, onFormSubmit, setOpen }: CardFormProps) {
         />
         <div className="flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
-          <Button type="submit">Add Card</Button>
+          <Button type="submit" disabled={formState.isSubmitting}>
+            {formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Add Card
+          </Button>
         </div>
       </form>
     </Form>

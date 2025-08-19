@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { notFound, useParams } from 'next/navigation';
+import { useParams, notFound } from 'next/navigation';
 import { ArrowLeft, BookOpen, Layers, PlusCircle,FileUp } from 'lucide-react';
 
 import { type Deck, type Card as CardType } from '@/lib/types';
@@ -16,7 +16,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { CardForm } from '@/components/card-form';
 import { CardListItem } from '@/components/card-list-item';
@@ -31,25 +30,51 @@ export default function DeckPage() {
   const [isCreateDialogOpen, setCreateDialogOpen] = useState(false);
   const [isImportDialogOpen, setImportDialogOpen] = useState(false);
   
-  useEffect(() => {
-    if (params.deckId) {
-      const foundDeck = getDeck(params.deckId);
-      if (foundDeck) {
-        setDeck(foundDeck);
-        setCards(getCardsForDeck(params.deckId));
-      }
-      setIsLoading(false);
-    }
-  }, [params.deckId]);
+  const deckId = params.deckId;
 
-  const refreshCards = () => {
+  useEffect(() => {
+    if (deckId) {
+      const fetchDeckData = async () => {
+        try {
+          const [foundDeck, foundCards] = await Promise.all([
+            getDeck(deckId),
+            getCardsForDeck(deckId)
+          ]);
+          
+          if (foundDeck) {
+            setDeck(foundDeck);
+            setCards(foundCards);
+          }
+        } catch (error) {
+          console.error("Failed to fetch deck data:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchDeckData();
+    }
+  }, [deckId]);
+
+  const refreshCards = async () => {
     if (deck) {
-      setCards(getCardsForDeck(deck.id));
+      const updatedCards = await getCardsForDeck(deck.id);
+      setCards(updatedCards);
     }
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-1 container mx-auto p-4 md:p-8">
+          <div className="animate-pulse">
+            <div className="h-8 w-48 bg-muted rounded mb-4"></div>
+            <div className="h-12 w-3/4 bg-muted rounded mb-2"></div>
+            <div className="h-6 w-1/2 bg-muted rounded"></div>
+          </div>
+        </main>
+      </div>
+    );
   }
 
   if (!deck) {

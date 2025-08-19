@@ -1,3 +1,4 @@
+
 'use client';
 
 import { type Card as CardType } from '@/lib/types';
@@ -27,13 +28,21 @@ interface CardListItemProps {
 export function CardListItem({ card, onCardChange }: CardListItemProps) {
   const { toast } = useToast();
   
-  const handleDelete = () => {
-    deleteCard(card.id);
-    toast({
-      title: "Card Deleted",
-      description: "The card has been removed from the deck.",
-    });
-    onCardChange();
+  const handleDelete = async () => {
+    try {
+      await deleteCard(card.id);
+      toast({
+        title: "Card Deleted",
+        description: "The card has been removed from the deck.",
+      });
+      onCardChange();
+    } catch (error) {
+       toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to delete the card. Please try again.",
+      });
+    }
   };
   
   return (

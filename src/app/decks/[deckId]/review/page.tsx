@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { notFound, useParams } from 'next/navigation';
+import { useParams, notFound } from 'next/navigation';
 
 import { type Deck, type Card as CardType } from '@/lib/types';
 import { getDeck, getReviewCardsForDeck } from '@/lib/data';
@@ -15,16 +15,30 @@ export default function ReviewPage() {
   const [cardsForReview, setCardsForReview] = useState<CardType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const deckId = params.deckId;
+
   useEffect(() => {
-    if (params.deckId) {
-      const foundDeck = getDeck(params.deckId);
-      if (foundDeck) {
-        setDeck(foundDeck);
-        setCardsForReview(getReviewCardsForDeck(params.deckId));
-      }
-      setIsLoading(false);
+    if (deckId) {
+      const fetchReviewData = async () => {
+        try {
+          const [foundDeck, reviewCards] = await Promise.all([
+            getDeck(deckId),
+            getReviewCardsForDeck(deckId)
+          ]);
+          
+          if (foundDeck) {
+            setDeck(foundDeck);
+            setCardsForReview(reviewCards);
+          }
+        } catch (error) {
+          console.error("Failed to fetch review data:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchReviewData();
     }
-  }, [params.deckId]);
+  }, [deckId]);
   
   if (isLoading) {
     return (

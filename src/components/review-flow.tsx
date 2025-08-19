@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,6 +11,7 @@ import { Progress } from '@/components/ui/progress';
 import { EmptyState } from './empty-state';
 import { CheckCircle, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 interface ReviewFlowProps {
   deck: Deck;
@@ -21,7 +23,8 @@ export function ReviewFlow({ deck, initialCards }: ReviewFlowProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
-  
+  const { toast } = useToast();
+
   const totalCards = initialCards.length;
   const currentCard = cards[currentIndex];
   
@@ -35,17 +38,25 @@ export function ReviewFlow({ deck, initialCards }: ReviewFlowProps) {
     setIsFlipped(true);
   };
 
-  const handleNextCard = (difficulty: 'hard' | 'medium' | 'easy') => {
-    updateCardReviewStatus(currentCard.id, difficulty);
-    
-    if (currentIndex < cards.length - 1) {
-      setIsFlipped(false);
-      // Timeout to allow the card to flip back before changing content
-      setTimeout(() => {
-        setCurrentIndex(currentIndex + 1);
-      }, 150);
-    } else {
-      setIsComplete(true);
+  const handleNextCard = async (difficulty: 'hard' | 'medium' | 'easy') => {
+    try {
+      await updateCardReviewStatus(currentCard.id, difficulty);
+      
+      if (currentIndex < cards.length - 1) {
+        setIsFlipped(false);
+        // Timeout to allow the card to flip back before changing content
+        setTimeout(() => {
+          setCurrentIndex(currentIndex + 1);
+        }, 150);
+      } else {
+        setIsComplete(true);
+      }
+    } catch(error) {
+       toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update card status. Please try again.",
+      });
     }
   };
 

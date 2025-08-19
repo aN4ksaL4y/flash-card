@@ -64,7 +64,7 @@ export function ImportSheetDialog({
     try {
       const importedCards = await importFromSheet(data.sheetUrl);
       if (importedCards && importedCards.length > 0) {
-        createCards(
+        await createCards(
           deckId,
           importedCards.map((c) => ({ front: c.front, back: c.back }))
         );
@@ -141,4 +141,3 @@ export function ImportSheetDialog({
     </Dialog>
   );
 }
-
