@@ -2,6 +2,8 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { AuthProvider } from '@/components/auth-provider';
+import Script from 'next/script';
+import { firebaseConfig } from '@/lib/firebase';
 
 export const metadata: Metadata = {
   title: 'FlashZen',
@@ -25,6 +27,8 @@ export default function RootLayout({
           {children}
           <Toaster />
         </AuthProvider>
+        <Script src="https://apis.google.com/js/api.js" async defer />
+        <Script src="https://accounts.google.com/gsi/client" async defer />
       </body>
     </html>
   );

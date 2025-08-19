@@ -1,11 +1,8 @@
 
 'use client';
 
-import { useState } from 'react';
-import * as z from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Loader2, FileUp } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -15,24 +12,18 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { importFromSheet } from '@/ai/flows/import-sheet-flow';
 import { createCards } from '@/lib/data';
+import { useAuth } from './auth-provider';
+import { firebaseConfig } from '@/lib/firebase';
 
-const formSchema = z.object({
-  sheetUrl: z.string().url({ message: 'Please enter a valid Google Sheet URL.' }),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+declare global {
+  interface Window {
+    google: any;
+    gapi: any;
+  }
+}
 
 interface ImportSheetDialogProps {
   deckId: string;
@@ -51,44 +42,90 @@ export function ImportSheetDialog({
 }: ImportSheetDialogProps) {
   const [isImporting, setIsImporting] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const [pickerApiLoaded, setPickerApiLoaded] = useState(false);
+  const [gsiToken, setGsiToken] = useState<string | null>(null);
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      sheetUrl: '',
-    },
-  });
-
-  const onSubmit = async (data: FormValues) => {
-    setIsImporting(true);
-    try {
-      const importedCards = await importFromSheet(data.sheetUrl);
-      if (importedCards && importedCards.length > 0) {
-        await createCards(
-          deckId,
-          importedCards.map((c) => ({ front: c.front, back: c.back }))
-        );
-        toast({
-          title: 'Import Successful',
-          description: `${importedCards.length} cards were imported into your deck.`,
-        });
-        onImportComplete();
-        onOpenChange(false);
-        form.reset();
-      } else {
-        throw new Error('No cards were found in the sheet.');
-      }
-    } catch (error) {
-      console.error('Import failed:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Import Failed',
-        description:
-          error instanceof Error ? error.message : 'An unknown error occurred.',
+  useEffect(() => {
+    const loadApis = () => {
+      window.gapi.load('client:picker', () => {
+        setPickerApiLoaded(true);
       });
-    } finally {
-      setIsImporting(false);
+    };
+
+    if (window.gapi) {
+      loadApis();
     }
+  }, []);
+
+  const handleAuthClick = () => {
+    if (window.google) {
+      const tokenClient = window.google.accounts.oauth2.initTokenClient({
+        client_id: firebaseConfig.clientId,
+        scope: 'https://www.googleapis.com/auth/drive.readonly',
+        callback: (tokenResponse: any) => {
+          setGsiToken(tokenResponse.access_token);
+        },
+      });
+      tokenClient.requestAccessToken();
+    }
+  };
+
+  useEffect(() => {
+    if (gsiToken) {
+      createPicker();
+    }
+  }, [gsiToken]);
+
+
+  const pickerCallback = async (data: any) => {
+    if (data.action === window.google.picker.Action.PICKED) {
+      const fileId = data.docs[0].id;
+      setIsImporting(true);
+      try {
+        const importedCards = await importFromSheet(fileId);
+        if (importedCards && importedCards.length > 0) {
+          await createCards(
+            deckId,
+            importedCards.map((c) => ({ front: c.front, back: c.back }))
+          );
+          toast({
+            title: 'Import Successful',
+            description: `${importedCards.length} cards were imported into your deck.`,
+          });
+          onImportComplete();
+          onOpenChange(false);
+        } else {
+          throw new Error('No cards were found in the sheet or the format was incorrect.');
+        }
+      } catch (error) {
+        console.error('Import failed:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Import Failed',
+          description: error instanceof Error ? error.message : 'An unknown error occurred. Make sure the sheet is shared correctly and the format is valid.',
+        });
+      } finally {
+        setIsImporting(false);
+      }
+    }
+  };
+
+  const createPicker = () => {
+    if (!pickerApiLoaded || !gsiToken || !user) return;
+
+    const view = new window.google.picker.View(window.google.picker.ViewId.SPREADSHEETS);
+    view.setMimeTypes("application/vnd.google-apps.spreadsheet");
+    
+    const picker = new window.google.picker.PickerBuilder()
+      .enableFeature(window.google.picker.Feature.NAV_HIDDEN)
+      .setAppId(firebaseConfig.projectId)
+      .setOAuthToken(gsiToken)
+      .addView(view)
+      .setDeveloperKey(firebaseConfig.apiKey)
+      .setCallback(pickerCallback)
+      .build();
+    picker.setVisible(true);
   };
 
   return (
@@ -98,45 +135,19 @@ export function ImportSheetDialog({
         <DialogHeader>
           <DialogTitle>Import from Google Sheet</DialogTitle>
           <DialogDescription>
-            Paste the URL of your public Google Sheet. The first column should be the card front, and the second column should be the back.
+            Select a spreadsheet from your Google Drive to import cards. The first column should be the card front, and the second column the back.
           </DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="sheetUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Sheet URL</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="https://docs.google.com/spreadsheets/..."
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex justify-end gap-2">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => onOpenChange(false)}
-                disabled={isImporting}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isImporting}>
-                {isImporting && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                Import Cards
-              </Button>
-            </div>
-          </form>
-        </Form>
+        <div className="flex justify-center py-4">
+          <Button onClick={handleAuthClick} disabled={isImporting || !pickerApiLoaded}>
+            {isImporting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <FileUp className="mr-2 h-4 w-4" />
+            )}
+            Choose Google Sheet
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
