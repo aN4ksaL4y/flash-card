@@ -1,9 +1,11 @@
+export type MarkdownString = string;
+
 export interface Card {
   id: string;
   deckId: string;
   ownerId: string;
-  front: string;
-  back: string;
+  front: MarkdownString;
+  back: MarkdownString;
   nextReviewDate: string; // ISO date string
   lastInterval: number; // in days
 }

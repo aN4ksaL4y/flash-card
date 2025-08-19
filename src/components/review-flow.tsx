@@ -3,6 +3,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { type Deck, type Card as CardType } from '@/lib/types';
 import { updateCardReviewStatus } from '@/lib/data';
 import { Button } from '@/components/ui/button';
@@ -104,16 +106,16 @@ export function ReviewFlow({ deck, initialCards }: ReviewFlowProps) {
           {/* Front of card */}
           <div className="absolute w-full h-full" style={{ backfaceVisibility: 'hidden' }}>
             <Card className="w-full h-full flex items-center justify-center">
-              <CardContent className="p-6">
-                <p className="text-3xl text-center font-semibold">{currentCard?.front}</p>
+              <CardContent className="p-6 prose prose-xl max-w-none text-center">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{currentCard?.front}</ReactMarkdown>
               </CardContent>
             </Card>
           </div>
           {/* Back of card */}
           <div className="absolute w-full h-full" style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
             <Card className="w-full h-full flex items-center justify-center bg-secondary">
-              <CardContent className="p-6">
-                <p className="text-3xl text-center font-semibold text-secondary-foreground">{currentCard?.back}</p>
+              <CardContent className="p-6 prose prose-xl max-w-none text-center text-secondary-foreground">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{currentCard?.back}</ReactMarkdown>
               </CardContent>
             </Card>
           </div>

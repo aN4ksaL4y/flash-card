@@ -1,6 +1,8 @@
 
 'use client';
 
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { type Card as CardType } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -48,11 +50,15 @@ export function CardListItem({ card, onCardChange }: CardListItemProps) {
   return (
     <Card>
       <CardContent className="p-4 flex items-center justify-between">
-        <div className="flex-grow grid grid-cols-2 gap-4 items-center">
-          <p className="text-foreground pr-4">{card.front}</p>
+        <div className="flex-grow grid grid-cols-2 gap-4 items-center prose prose-sm max-w-none">
+          <div className="text-foreground pr-4">
+             <ReactMarkdown remarkPlugins={[remarkGfm]}>{card.front}</ReactMarkdown>
+          </div>
           <div className="flex items-center">
             <Separator orientation="vertical" className="h-10 mr-4" />
-            <p className="text-muted-foreground">{card.back}</p>
+            <div className="text-muted-foreground">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{card.back}</ReactMarkdown>
+            </div>
           </div>
         </div>
         <div className="flex-shrink-0">

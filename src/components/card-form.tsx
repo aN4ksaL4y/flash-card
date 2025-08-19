@@ -2,9 +2,10 @@
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useForm, Controller } from "react-hook-form"
 import * as z from "zod"
-import { Loader2 } from "lucide-react";
+import { Loader2, Bold, Italic, Link, Code } from "lucide-react";
+import React, { useRef } from 'react';
 
 import { Button } from "@/components/ui/button"
 import {
@@ -32,6 +33,48 @@ interface CardFormProps {
   setOpen: (open: boolean) => void;
 }
 
+const FormattingToolbar = ({ textareaRef, onValueChange }: { textareaRef: React.RefObject<HTMLTextAreaElement>, onValueChange: (value: string) => void }) => {
+  const insertMarkdown = (syntax: 'bold' | 'link' | 'code') => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = textarea.value.substring(start, end);
+    let markdown = '';
+
+    switch (syntax) {
+      case 'bold':
+        markdown = `**${selectedText || 'teks tebal'}**`;
+        break;
+      case 'link':
+        markdown = `[${selectedText || 'teks link'}](url)`;
+        break;
+      case 'code':
+        markdown = `\`${selectedText || 'kode'}\``;
+        break;
+    }
+
+    const newValue = textarea.value.substring(0, start) + markdown + textarea.value.substring(end);
+    onValueChange(newValue);
+
+    // Move cursor after the inserted markdown
+    setTimeout(() => {
+        textarea.focus();
+        textarea.selectionStart = textarea.selectionEnd = start + markdown.length;
+    }, 0);
+  };
+
+  return (
+    <div className="flex items-center gap-1 rounded-t-md border border-b-0 border-input bg-transparent p-1">
+      <Button type="button" variant="outline" size="icon" className="h-7 w-7" onClick={() => insertMarkdown('bold')}><Bold className="h-4 w-4" /></Button>
+      <Button type="button" variant="outline" size="icon" className="h-7 w-7" onClick={() => insertMarkdown('link')}><Link className="h-4 w-4" /></Button>
+      <Button type="button" variant="outline" size="icon" className="h-7 w-7" onClick={() => insertMarkdown('code')}><Code className="h-4 w-4" /></Button>
+    </div>
+  );
+};
+
+
 export function CardForm({ deckId, onFormSubmit, setOpen }: CardFormProps) {
   const { toast } = useToast();
   const form = useForm<CardFormValues>({
@@ -40,8 +83,12 @@ export function CardForm({ deckId, onFormSubmit, setOpen }: CardFormProps) {
       front: "",
       back: "",
     },
-  })
-  const { formState } = form;
+  });
+
+  const frontTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const backTextareaRef = useRef<HTMLTextAreaElement>(null);
+  
+  const { formState, control, setValue } = form;
 
   async function onSubmit(data: CardFormValues) {
     try {
@@ -69,34 +116,38 @@ export function CardForm({ deckId, onFormSubmit, setOpen }: CardFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
+        <Controller
+          control={control}
           name="front"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Depan</FormLabel>
+              <FormattingToolbar textareaRef={frontTextareaRef} onValueChange={(v) => setValue('front', v)} />
               <FormControl>
                 <Textarea
-                  placeholder="Isi buat bagian depan kartu"
-                  className="resize-y min-h-[100px]"
                   {...field}
+                  ref={frontTextareaRef}
+                  placeholder="Isi buat bagian depan kartu"
+                  className="resize-y min-h-[100px] rounded-t-none"
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
+        <Controller
+          control={control}
           name="back"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Belakang</FormLabel>
+              <FormattingToolbar textareaRef={backTextareaRef} onValueChange={(v) => setValue('back', v)} />
               <FormControl>
                 <Textarea
-                  placeholder="Isi buat bagian belakang kartu"
-                  className="resize-y min-h-[100px]"
                   {...field}
+                  ref={backTextareaRef}
+                  placeholder="Isi buat bagian belakang kartu"
+                  className="resize-y min-h-[100px] rounded-t-none"
                 />
               </FormControl>
               <FormMessage />
