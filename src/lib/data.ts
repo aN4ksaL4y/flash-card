@@ -182,12 +182,12 @@ export const deleteCard = async (id: string): Promise<void> => {
 
 export const getReviewCardsForDeck = async (deckId: string): Promise<Card[]> => {
     const userId = getCurrentUserId();
-    const today = formatISO(new Date().setHours(0, 0, 0, 0));
+    const now = formatISO(new Date());
     const q = query(
         collection(db, CARDS_COLLECTION),
         where('deckId', '==', deckId),
         where('ownerId', '==', userId),
-        where('nextReviewDate', '<=', today)
+        where('nextReviewDate', '<=', now)
     );
     const snapshot = await getDocs(q);
     return snapshot.docs.map(doc => fromSnapshot<Card>(doc));
@@ -199,9 +199,6 @@ export const updateCardReviewStatus = async (cardId: string, difficulty: 'hard' 
 
     if (!cardSnap.exists()) return;
     
-    // In a real app, we'd also verify ownership here.
-    // For simplicity, we'll skip it, assuming the user got the cardId legitimately.
-
     const card = fromSnapshot<Card>(cardSnap);
     let newInterval: number;
     const today = new Date();
