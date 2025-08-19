@@ -13,23 +13,34 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
 
+  const loadDecks = async () => {
+    if (!user) return;
+    setIsLoading(true);
+    try {
+      // Ensure data is initialized for a new user
+      await initializeData(user.uid);
+      const fetchedDecks = await getDecks();
+      setDecks(fetchedDecks);
+    } catch (error) {
+      console.error("Failed to load decks:", error);
+      // Optionally, show a toast message to the user
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      if (user) {
-        await initializeData(user.uid); // This will seed the DB if it's empty for the user
-        const fetchedDecks = await getDecks();
-        setDecks(fetchedDecks);
-        setIsLoading(false);
-      }
-    };
-    fetchData();
+    if (user) {
+      loadDecks();
+    } else {
+      // If there's no user, we don't need to load anything.
+      // The AuthProvider will handle redirection.
+      setIsLoading(false);
+    }
   }, [user]);
 
-  const refreshDecks = async () => {
-    setIsLoading(true);
-    const fetchedDecks = await getDecks();
-    setDecks(fetchedDecks);
-    setIsLoading(false);
+  const refreshDecks = () => {
+    loadDecks();
   };
 
   if (isLoading || !user) {
