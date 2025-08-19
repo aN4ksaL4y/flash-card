@@ -128,9 +128,8 @@ export const deleteDeck = async (id: string): Promise<void> => {
 }
 
 export const getCardsForDeck = async (deckId: string): Promise<Card[]> => {
-  // We don't need to check ownerId here because we assume the user already
-  // has access to the deck. This is a design choice for simplicity.
-  const q = query(collection(db, CARDS_COLLECTION), where('deckId', '==', deckId));
+  const userId = getCurrentUserId();
+  const q = query(collection(db, CARDS_COLLECTION), where('deckId', '==', deckId), where('ownerId', '==', userId));
   const snapshot = await getDocs(q);
   return snapshot.docs.map(doc => fromSnapshot<Card>(doc));
 };
@@ -182,11 +181,12 @@ export const deleteCard = async (id: string): Promise<void> => {
 }
 
 export const getReviewCardsForDeck = async (deckId: string): Promise<Card[]> => {
+    const userId = getCurrentUserId();
     const today = formatISO(new Date().setHours(0, 0, 0, 0));
-    // We assume access to the deck is already verified.
     const q = query(
         collection(db, CARDS_COLLECTION),
         where('deckId', '==', deckId),
+        where('ownerId', '==', userId),
         where('nextReviewDate', '<=', today)
     );
     const snapshot = await getDocs(q);
@@ -214,7 +214,7 @@ export const updateCardReviewStatus = async (cardId: string, difficulty: 'hard' 
             newInterval = Math.max(2, Math.ceil((card.lastInterval || 1) * 2));
             break;
         case 'easy':
-            newInterval = Math.max(3, Math.ceil((card.lastInterval || 1.5) * 4));
+            newInterval = Math.max(3, Math.ceil((card.lastInterval || 1) * 4));
             break;
     }
 
