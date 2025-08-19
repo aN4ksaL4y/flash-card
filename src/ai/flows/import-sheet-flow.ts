@@ -33,7 +33,7 @@ const sheetImportPrompt = ai.definePrompt({
     Example Output:
     [
         { "front": "Hello", "back": "こんにちは" },
-        { "front": "Thank you", "ありがとう" }
+        { "front": "Thank you", "back": "ありがとう" }
     ]
     Here is the content:
     {{{input}}}
