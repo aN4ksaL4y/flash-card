@@ -1,5 +1,5 @@
-# Firebase Studio
+# FlashZen
 
-This is a NextJS starter in Firebase Studio.
+A simple, effective flashcard app for memorization and learning. Users can create custom decks, add and edit cards with front and back content, review cards, and mark them for spaced repetition.
 
-To get started, take a look at src/app/page.tsx.
+This is a Next.js application built with Firebase Studio.
