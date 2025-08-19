@@ -16,6 +16,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import { CardForm } from '@/components/card-form';
 import { CardListItem } from '@/components/card-list-item';
