@@ -1,9 +1,10 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, BookOpen, Layers, PlusCircle } from 'lucide-react';
+import { ArrowLeft, BookOpen, Layers, PlusCircle,FileUp } from 'lucide-react';
 
 import { type Deck, type Card as CardType } from '@/lib/types';
 import { getDeck, getCardsForDeck } from '@/lib/data';
@@ -20,12 +21,14 @@ import {
 import { CardForm } from '@/components/card-form';
 import { CardListItem } from '@/components/card-list-item';
 import { EmptyState } from '@/components/empty-state';
+import { ImportSheetDialog } from '@/components/import-sheet-dialog';
 
 export default function DeckPage({ params }: { params: { deckId: string } }) {
   const [deck, setDeck] = useState<Deck | null>(null);
   const [cards, setCards] = useState<CardType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateDialogOpen, setCreateDialogOpen] = useState(false);
+  const [isImportDialogOpen, setImportDialogOpen] = useState(false);
   
   useEffect(() => {
     const foundDeck = getDeck(params.deckId);
@@ -68,27 +71,39 @@ export default function DeckPage({ params }: { params: { deckId: string } }) {
             </div>
             <div className="flex gap-2 mt-4 md:mt-0">
                 <Dialog open={isCreateDialogOpen} onOpenChange={setCreateDialogOpen}>
-                <DialogTrigger asChild>
-                    <Button variant="outline">
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Add Card
-                    </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                    <DialogTitle>Add New Card</DialogTitle>
-                    <DialogDescription>
-                        Enter the front and back content for your new card.
-                    </DialogDescription>
-                    </DialogHeader>
-                    <CardForm
-                        deckId={deck.id}
-                        onFormSubmit={refreshCards}
-                        setOpen={setCreateDialogOpen}
-                    />
-                </DialogContent>
+                  <DialogTrigger asChild>
+                      <Button variant="outline">
+                          <PlusCircle className="mr-2 h-4 w-4" />
+                          Add Card
+                      </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                      <DialogTitle>Add New Card</DialogTitle>
+                      <DialogDescription>
+                          Enter the front and back content for your new card.
+                      </DialogDescription>
+                      </DialogHeader>
+                      <CardForm
+                          deckId={deck.id}
+                          onFormSubmit={refreshCards}
+                          setOpen={setCreateDialogOpen}
+                      />
+                  </DialogContent>
                 </Dialog>
                 
+                <ImportSheetDialog
+                  deckId={deck.id}
+                  onImportComplete={refreshCards}
+                  open={isImportDialogOpen}
+                  onOpenChange={setImportDialogOpen}
+                >
+                  <Button variant="outline">
+                    <FileUp className="mr-2 h-4 w-4" />
+                    Import from Sheet
+                  </Button>
+                </ImportSheetDialog>
+
                 {cards.length > 0 && (
                 <Button asChild>
                     <Link href={`/decks/${deck.id}/review`}>

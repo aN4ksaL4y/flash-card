@@ -1,3 +1,4 @@
+
 import { type AppData, type Deck, type Card } from './types';
 import { sub, add, formatISO } from 'date-fns';
 
@@ -78,6 +79,20 @@ export const createCard = (card: Omit<Card, 'id' | 'nextReviewDate' | 'lastInter
     data.cards.push(newCard);
     saveAppData(data);
     return newCard;
+};
+
+export const createCards = (deckId: string, cards: { front: string, back: string }[]): Card[] => {
+    const data = getAppData();
+    const newCards: Card[] = cards.map(card => ({
+        ...card,
+        deckId,
+        id: Date.now().toString() + Math.random(),
+        nextReviewDate: formatISO(new Date()),
+        lastInterval: 0,
+    }));
+    data.cards.push(...newCards);
+    saveAppData(data);
+    return newCards;
 };
 
 export const deleteCard = (id: string): void => {
