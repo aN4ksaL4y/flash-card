@@ -1,6 +1,7 @@
 export interface Card {
   id: string;
   deckId: string;
+  ownerId: string;
   front: string;
   back: string;
   nextReviewDate: string; // ISO date string
@@ -9,6 +10,7 @@ export interface Card {
 
 export interface Deck {
   id: string;
+  ownerId: string;
   title: string;
   description: string;
 }

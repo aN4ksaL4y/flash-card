@@ -6,20 +6,24 @@ import { Header } from '@/components/header';
 import { DeckList } from '@/components/deck-list';
 import { type Deck } from '@/lib/types';
 import { getDecks, initializeData } from '@/lib/data';
+import { useAuth } from '@/components/auth-provider';
 
 export default function Home() {
   const [decks, setDecks] = useState<Deck[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchData = async () => {
-      await initializeData(); // This will seed the DB if it's empty
-      const fetchedDecks = await getDecks();
-      setDecks(fetchedDecks);
-      setIsLoading(false);
+      if (user) {
+        await initializeData(user.uid); // This will seed the DB if it's empty for the user
+        const fetchedDecks = await getDecks();
+        setDecks(fetchedDecks);
+        setIsLoading(false);
+      }
     };
     fetchData();
-  }, []);
+  }, [user]);
 
   const refreshDecks = async () => {
     setIsLoading(true);
@@ -28,7 +32,7 @@ export default function Home() {
     setIsLoading(false);
   };
 
-  if (isLoading) {
+  if (isLoading || !user) {
     return (
       <div className="flex flex-col h-screen">
         <Header />
