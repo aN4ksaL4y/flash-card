@@ -64,7 +64,9 @@ export function ImportSheetDialog({
         client_id: firebaseConfig.clientId,
         scope: 'https://www.googleapis.com/auth/drive.readonly',
         callback: (tokenResponse: any) => {
-          setGsiToken(tokenResponse.access_token);
+          if (tokenResponse && tokenResponse.access_token) {
+            setGsiToken(tokenResponse.access_token);
+          }
         },
       });
       tokenClient.requestAccessToken();
@@ -107,7 +109,10 @@ export function ImportSheetDialog({
         });
       } finally {
         setIsImporting(false);
+        setGsiToken(null); // Reset token after use
       }
+    } else if (data.action === window.google.picker.Action.CANCEL) {
+        onOpenChange(false);
     }
   };
 
@@ -119,7 +124,7 @@ export function ImportSheetDialog({
     
     const picker = new window.google.picker.PickerBuilder()
       .enableFeature(window.google.picker.Feature.NAV_HIDDEN)
-      .setAppId(firebaseConfig.projectId)
+      .setAppId(firebaseConfig.appId.split(':')[1]) // Use the numeric app ID
       .setOAuthToken(gsiToken)
       .addView(view)
       .setDeveloperKey(firebaseConfig.apiKey)

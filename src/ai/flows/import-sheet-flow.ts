@@ -48,7 +48,9 @@ const importFromSheetFlow = ai.defineFlow(
     outputSchema: SheetImportOutputSchema,
   },
   async (fileId) => {
-    // 1. Authenticate with Google
+    // 1. Authenticate with Google.
+    // Note: This uses Application Default Credentials.
+    // Ensure your environment is authenticated (e.g., via `gcloud auth application-default login`)
     const auth = new google.auth.GoogleAuth({
       scopes: ['https://www.googleapis.com/auth/drive.readonly'],
     });
