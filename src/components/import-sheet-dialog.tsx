@@ -60,14 +60,17 @@ export function ImportSheetDialog({
         setIsOpen(false);
         setSheetUrl('');
       } else {
-        throw new Error('No cards were found in the sheet or the format was incorrect.');
+        // This is the error that was being triggered before
+        throw new Error('No cards were found in the sheet. Please ensure the link is for a public sheet and that the format is correct (Column A for front, Column B for back).');
       }
     } catch (error) {
       console.error('Import failed:', error);
       toast({
         variant: 'destructive',
         title: 'Import Failed',
-        description: error instanceof Error ? error.message : 'An unknown error occurred. Make sure the sheet is shared correctly and the format is valid (Column A for front, Column B for back).',
+        // Now the more descriptive error message will be shown
+        description: error instanceof Error ? error.message : 'An unknown error occurred. Please try again.',
+        duration: 9000, // Show for longer
       });
     } finally {
       setIsImporting(false);
