@@ -22,6 +22,7 @@ import { CardForm } from '@/components/card-form';
 import { CardListItem } from '@/components/card-list-item';
 import { EmptyState } from '@/components/empty-state';
 import { ImportSheetDialog } from '@/components/import-sheet-dialog';
+import { ExportDeckButton } from '@/components/export-deck-button';
 
 export default function DeckPage() {
   const params = useParams<{ deckId: string }>();
@@ -97,7 +98,7 @@ export default function DeckPage() {
                 <h1 className="text-4xl font-bold font-headline text-foreground">{deck.title}</h1>
                 <p className="mt-2 text-lg text-muted-foreground">{deck.description}</p>
             </div>
-            <div className="flex gap-2 mt-4 md:mt-0">
+            <div className="flex gap-2 mt-4 md:mt-0 flex-wrap justify-end">
                 <Dialog open={isCreateDialogOpen} onOpenChange={setCreateDialogOpen}>
                   <DialogTrigger asChild>
                       <Button variant="outline">
@@ -124,6 +125,8 @@ export default function DeckPage() {
                   deckId={deck.id}
                   onImportComplete={refreshCards}
                 />
+
+                <ExportDeckButton deck={deck} />
 
                 {cards.length > 0 && (
                 <Button asChild>
