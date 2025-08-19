@@ -19,26 +19,32 @@ const SheetImportOutputSchema = z.array(CardSchema);
 
 type SheetImportOutput = z.infer<typeof SheetImportOutputSchema>;
 
-const sheetImportPrompt = ai.definePrompt({
-  name: 'sheetImportPrompt',
-  input: { schema: z.string() },
-  output: { schema: SheetImportOutputSchema },
-  prompt: `
-    You are an expert at data extraction. Your task is to extract flashcard data from the provided text content, which is from a Google Sheet CSV.
-    The user will provide text content where each line represents a card. The value before the first comma is the 'front' of the card, and the value after the first comma is the 'back'.
-    Extract the front and back for each card.
-    Example Input:
-    "Hello,こんにちは"
-    "Thank you,ありがとう"
-    Example Output:
-    [
-        { "front": "Hello", "back": "こんにちは" },
-        { "front": "Thank you", "back": "ありがとう" }
-    ]
-    Here is the content:
-    {{{input}}}
-  `,
-});
+// Helper function to parse CSV data manually.
+const parseCsv = (csvText: string): SheetImportOutput => {
+  const cards: SheetImportOutput = [];
+  // Split by new line, filtering out empty lines
+  const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== '');
+
+  for (const line of lines) {
+    const parts = line.split(',');
+    if (parts.length >= 2) {
+      // The first part is the 'front'
+      const front = parts[0].trim();
+      // The rest of the parts are joined to form the 'back'
+      const back = parts.slice(1).join(',').trim();
+      
+      // Remove surrounding quotes if they exist
+      const cleanedFront = front.startsWith('"') && front.endsWith('"') ? front.slice(1, -1) : front;
+      const cleanedBack = back.startsWith('"') && back.endsWith('"') ? back.slice(1, -1) : back;
+
+      if (cleanedFront && cleanedBack) {
+        cards.push({ front: cleanedFront, back: cleanedBack });
+      }
+    }
+  }
+  return cards;
+};
+
 
 const importFromSheetFlow = ai.defineFlow(
   {
@@ -66,9 +72,10 @@ const importFromSheetFlow = ai.defineFlow(
       return [];
     }
 
-    // 3. Use AI to parse the CSV text into structured card data
-    const { output } = await sheetImportPrompt(csvText);
-    return output || [];
+    // 3. Use direct parsing instead of AI
+    const cards = parseCsv(csvText);
+    
+    return cards;
   }
 );
 
