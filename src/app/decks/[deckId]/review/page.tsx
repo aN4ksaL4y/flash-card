@@ -1,25 +1,29 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 
 import { type Deck, type Card as CardType } from '@/lib/types';
 import { getDeck, getReviewCardsForDeck } from '@/lib/data';
 import { Header } from '@/components/header';
 import { ReviewFlow } from '@/components/review-flow';
 
-export default function ReviewPage({ params }: { params: { deckId: string } }) {
+export default function ReviewPage() {
+  const params = useParams<{ deckId: string }>();
   const [deck, setDeck] = useState<Deck | null>(null);
   const [cardsForReview, setCardsForReview] = useState<CardType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const foundDeck = getDeck(params.deckId);
-    if (foundDeck) {
-      setDeck(foundDeck);
-      setCardsForReview(getReviewCardsForDeck(params.deckId));
+    if (params.deckId) {
+      const foundDeck = getDeck(params.deckId);
+      if (foundDeck) {
+        setDeck(foundDeck);
+        setCardsForReview(getReviewCardsForDeck(params.deckId));
+      }
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, [params.deckId]);
   
   if (isLoading) {

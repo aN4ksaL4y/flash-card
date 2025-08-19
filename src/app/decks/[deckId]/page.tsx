@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import { ArrowLeft, BookOpen, Layers, PlusCircle,FileUp } from 'lucide-react';
 
 import { type Deck, type Card as CardType } from '@/lib/types';
@@ -23,7 +23,8 @@ import { CardListItem } from '@/components/card-list-item';
 import { EmptyState } from '@/components/empty-state';
 import { ImportSheetDialog } from '@/components/import-sheet-dialog';
 
-export default function DeckPage({ params }: { params: { deckId: string } }) {
+export default function DeckPage() {
+  const params = useParams<{ deckId: string }>();
   const [deck, setDeck] = useState<Deck | null>(null);
   const [cards, setCards] = useState<CardType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,12 +32,14 @@ export default function DeckPage({ params }: { params: { deckId: string } }) {
   const [isImportDialogOpen, setImportDialogOpen] = useState(false);
   
   useEffect(() => {
-    const foundDeck = getDeck(params.deckId);
-    if (foundDeck) {
-      setDeck(foundDeck);
-      setCards(getCardsForDeck(params.deckId));
+    if (params.deckId) {
+      const foundDeck = getDeck(params.deckId);
+      if (foundDeck) {
+        setDeck(foundDeck);
+        setCards(getCardsForDeck(params.deckId));
+      }
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, [params.deckId]);
 
   const refreshCards = () => {
